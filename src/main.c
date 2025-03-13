@@ -29,6 +29,9 @@ int main(void) {
     num = Deque_popFront(my_deque);
   }
 
+  // Free the deque
+  Deque_free(my_deque);
+
   // Return success status code
   return 0;
 }

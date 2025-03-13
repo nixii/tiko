@@ -18,7 +18,7 @@ typedef struct Deque {
   DequeNode *last;
 } Deque;
 
-// Functons
+// Functons for the deque
 Deque *Deque_new(void);
 bool Deque_isEmpty(Deque *deque);
 void Deque_pushFront(Deque *deque, void *content);
@@ -27,3 +27,4 @@ void *Deque_popFront(Deque *deque);
 void *Deque_popBack(Deque *deque);
 void *Deque_peekFront(Deque *deque);
 void *Deque_peekBack(Deque *deque);
+void Deque_free(Deque *deque);

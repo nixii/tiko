@@ -156,3 +156,22 @@ void *Deque_peekBack(Deque *deque) {
     return NULL;
   return deque->last->data;
 }
+
+
+////////////////////////
+// Free the entire deque
+void Deque_free(Deque *deque) {
+
+  // The first node in the deque
+  DequeNode *first = deque->first;
+
+  // For each deque node, free it
+  while (first != NULL) {
+    DequeNode *node = first;
+    first = node->nextNode;
+    free(node);
+  }
+
+  // Finally, free the deque
+  free(deque);
+}
