@@ -1,5 +1,6 @@
 // Hi PotatoFur! :D
 // hiii cutie ^w^
+// NUU you lie
 
 #include "dynarr.h"
 #include <stdio.h>
