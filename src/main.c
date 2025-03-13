@@ -1,3 +1,4 @@
+// Hi PotatoFur! :D
 
 #include "dynarr.h"
 #include <stdio.h>

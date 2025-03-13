@@ -58,3 +58,10 @@ void DynArr_getTo(DynArr *arr, size_t index, void *to) {
   }
   
 }
+
+// Get an element out
+void *DynArr_getElem(DynArr *arr, size_t index) {
+  void *data;
+  DynArr_getTo(arr, index, &data);
+  return data;
+}
