@@ -1,3 +1,5 @@
+
+# Ignore all cmake stuff besides CMakeLists.txt
 ./bin/*
 ./Makefile
 ./CMakeCache.txt
