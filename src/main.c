@@ -8,7 +8,7 @@ int main(void) {
   int x = 1;
   DynArr_set(&arr, 1, &x);
   int y;
-  DynArr_getTo(&arr, 1, &y);
+  DynArr_get(&arr, 1, &y);
   printf("%d\n", y);
 
   return 0;
