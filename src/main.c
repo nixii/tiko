@@ -1,20 +1,34 @@
 
-#include "dynarr.h"
+// Includes
 #include <stdio.h>
+#include "deque.h"
 
+// Main function
 int main(void) {
 
-  DynArr arr = DynArr_new(2, sizeof(float));
-  float x = 20.4;
-  DynArr_set(&arr, 1, &x);
-  float x2 = 12.3; // Create a new floating point number to set the 0th index to
-  DynArr_set(&arr, 0, &x2); // Set the dynamic array's 0th index to x3
-  float y;
-  DynArr_get(&arr, 1, &y);
-  float y2; // Create a buffer for the 0th index of the array to be loaded into
-  DynArr_get(&arr, 0, &y2); // Load the 0th index into y2
-  printf("%f\n", y);
-  printf("%f\n", y2); // Print y2 (the 0th index) out
+  // Create the deque
+  Deque *my_deque = Deque_new();
 
+  // The numbers; these have to be stored here because I can't lose the value else I
+  // no longer have a pointer to them. I could use malloc() but that introduces errors
+  // and more code that I don't want to deal with in this test
+  int nums[10];
+
+  // For each number 0-9, add it into the array and push it into the deque
+  for (int i = 0; i < 10; i++) {
+    nums[i] = i;
+    Deque_pushBack(my_deque, &nums[i]);
+  }
+
+  // Store the current number from popping the front of the deque
+  int *num = Deque_popFront(my_deque);
+
+  // While this isn't equal to null, print the value out and get the next number.
+  while (num != NULL) {
+    printf("Number is now: %d\n", *num);
+    num = Deque_popFront(my_deque);
+  }
+
+  // Return success status code
   return 0;
 }
