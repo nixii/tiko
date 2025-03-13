@@ -1,7 +1,8 @@
 
 # Ignore all cmake stuff besides CMakeLists.txt
-./bin/*
-./Makefile
-./CMakeCache.txt
-./CMakeFiles
-./*.cmake
+bin/*
+Makefile
+CMakeCache.txt
+CMakeFiles
+*.cmake
+.DS_Store
