@@ -25,6 +25,7 @@ DynArr DynArr_new(size_t size, size_t elem_size) {
   // If data is null then report an error
   if (data == NULL) {
     fprintf(stderr, "Error: could not allocate memory for dynamic array.");
+    arr.data = NULL;
     arr.size = 0;
     return arr;
   }
@@ -34,4 +35,26 @@ DynArr DynArr_new(size_t size, size_t elem_size) {
   
   // Return the array
   return arr;
+}
+
+// Set an element
+void DynArr_set(DynArr *arr, size_t index, void *data) {
+
+  if (index < arr->size) {
+    memcpy((char *)arr->data + index * arr->elem_size, data, arr->elem_size);
+  } else {
+    fprintf(stderr, "Error: index out of bounds!");
+  }
+  
+}
+
+// Get an element out
+void DynArr_getTo(DynArr *arr, size_t index, void *to) {
+
+  if (index < arr->size) {
+    memcpy(to, (const char *)arr->data + index * arr->elem_size, arr->elem_size);
+  } else {
+    fprintf(stderr, "Error: index out of bounds!");
+  }
+  
 }

@@ -11,5 +11,8 @@ typedef struct DynArr {
   size_t elem_size;
 } DynArr;
 
-// Create a new dynamic array
+// Functions (names descriptive)
 DynArr DynArr_new(size_t size, size_t elem_size);
+void DynArr_set(DynArr *arr, size_t index, void *data);
+void DynArr_getTo(DynArr *arr, size_t index, void *to);
+
