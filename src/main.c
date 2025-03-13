@@ -5,7 +5,7 @@
 int main(void) {
 
   DynArr arr = DynArr_new(2, sizeof(int));
-  int x = 1;
+  float x = 1.2;
   DynArr_set(&arr, 1, &x);
   int y;
   DynArr_get(&arr, 1, &y);
