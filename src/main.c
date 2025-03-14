@@ -1,7 +1,7 @@
 
 // Includes
 #include <stdio.h>
-#include "deque.h"
+#include "deque/deque.h"
 
 // Main function
 int main(void) {
