@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
@@ -8,7 +9,7 @@
 
 // The type for a partial lexer result
 typedef struct PartialLexerResult {
-  Token *token;
+  Token token;
   Error *error;
 } PartialLexerResult;
 
@@ -36,9 +37,9 @@ PartialLexerResult tokenize_number(char *text, int *i) {
   (*i)--;
 
   // Allocate the token on the heap (deque requirement)
-  Token *t = malloc(sizeof(Token));
-  t->type = NUMBER;
-  t->value = number_string;
+  Token t;
+  t.type = NUMBER;
+  t.value = number_string;
 
   // If it gets here, it's a valid number
   return (PartialLexerResult){.error = NULL, .token = t};
@@ -51,7 +52,8 @@ LexerResult tokenize(char *text) {
   int i = 0;
 
   // Create the deque of tokens
-  Deque *tokens = Deque_new();
+  Token *tokens = malloc(0);
+  int token_count = 0;
 
   // While there is a character
   while (strlen(text) > i) {
@@ -71,7 +73,9 @@ LexerResult tokenize(char *text) {
         }
 
         // Add the token
-        Deque_pushBack(tokens, res.token);
+        token_count += 1;
+        tokens = realloc(tokens, sizeof(Token) * token_count);
+        tokens[token_count - 1] = res.token;
       }
 
       // Default case
@@ -83,5 +87,5 @@ LexerResult tokenize(char *text) {
   }
 
   // Return the list of tokens
-  return (LexerResult){.tokens = tokens, .error = NULL};
+  return (LexerResult){.tokens = tokens, .error = NULL, .num_tokens = (size_t)token_count};
 }
