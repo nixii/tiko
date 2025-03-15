@@ -25,3 +25,4 @@ typedef struct Token {
 
 // Create a new token
 Token Token_new(TokenType type, char *value);
+void Token_repr(Token *t);
