@@ -1,13 +1,11 @@
 
 // Includes
 #include <stdio.h>
-#include "deque/deque.h"
-#include "lexer/token.h"
+#include "lexer/lexer.h"
 
 // Main function
 int main(void) {
 
-  Token t = Token_new(OPERATION, NULL);
-  printf("%d\n", t.type);
-
+  LexerResult res = tokenize("Hello, world!");
+  return 0;
 }
