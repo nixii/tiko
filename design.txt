@@ -1,0 +1,11 @@
+
+data:
+	@helloworld = "Hello, world!\n"
+
+label %main:
+	$text set &@helloworld
+	$text_len size @helloworld
+	$text_len set $text_len 
+	call print $text $text_len
+	return #0
+
