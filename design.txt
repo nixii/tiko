@@ -1,11 +1,11 @@
 
-data:
-	@helloworld = "Hello, world!\n"
+data:                                      ; The data section; this stores static data about the program.
+	@helloworld = "Hello, world!\n"        ; Create a static variable "@helloworld" and make it the text "Hello, world!\n"
 
-label %main:
-	$text set &@helloworld
-	$text_len size @helloworld
-	$text_len set $text_len 
-	call print $text $text_len
-	return #0
+label %main:                               ; Create the %main label, or the entry point.
+	$text set &@helloworld                 ; Set the variable $text to a pointer (&) to the static variable "@helloworld"
+	$text_len size @helloworld             ; Set the variable $text_len to the byte size of the static variable "@helloworld"
+	$text_len set $text_len // !CHAR_SIZE  ; Integer divide the text length by the program constant byte size of a character
+	call print $text $text_len             ; Call the system output for text with the text length
+	call return #0                              ; Call the system return with code 0
 
