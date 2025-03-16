@@ -90,7 +90,7 @@ LexerResult tokenize(char *text) {
 
     // Prepare the result
     PartialLexerResult res;
-    bool hasRes = false;
+    bool hasRes = true;
   
     // All possible cases
     switch (text[i]) {
@@ -98,18 +98,29 @@ LexerResult tokenize(char *text) {
       // If it is a number
       case '#': {
         res = tokenize_number(text, &i);
-        hasRes = true;
         break;
       }
       case '$': {
-        printf("Hello, world!\n");
         res = tokenize_labeled_identifier(text, &i, VAR_IDENT);
-        hasRes = true;
+        break;
+      }
+      case '%': {
+        res = tokenize_labeled_identifier(text, &i, LABEL_IDENT);
+        break;
+      }
+      case '@': {
+        res = tokenize_labeled_identifier(text, &i, CONST_IDENT);
+        break;
+      }
+      case '!': {
+        res = tokenize_labeled_identifier(text, &i, GLOBAL_IDENT);
         break;
       }
     
       // Default case
-      default: {}
+      default: {
+        hasRes = false;
+      }
     }
     
     // If there is an error

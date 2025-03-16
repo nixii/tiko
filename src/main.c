@@ -8,7 +8,7 @@
 int main(void) {
 
   // Get the lexer result of this static string
-  LexerResult res = tokenize("#150 #20 $x_test");
+  LexerResult res = tokenize("#150 #20 $x_test %main @const !CHAR_LEN");
 
   // If there isn't an error and there are actually tokens
   if (res.tokens) {
