@@ -9,6 +9,7 @@ typedef enum TokenType {
   VAR_IDENT,
   CONST_IDENT,
   GLOBAL_IDENT,
+  SECT_IDENT,
 
   OPERATION,
 

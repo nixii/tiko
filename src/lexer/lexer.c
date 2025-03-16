@@ -120,6 +120,10 @@ LexerResult tokenize(char *text) {
         res = (PartialLexerResult) {.token = Token_new(COLON, NULL), NULL};
         break;
       }
+      case '.': {
+        res = tokenize_labeled_identifier(text, &i, SECT_IDENT);
+        break;  
+      }
     
       // Default case
       default: {
