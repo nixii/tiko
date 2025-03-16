@@ -13,21 +13,31 @@ typedef struct PartialLexerResult {
   Error *error;
 } PartialLexerResult;
 
-// Tokenize a number
-PartialLexerResult tokenize_number(char *text, int *i) {
+// The if statement for a number
+bool is_valid_number_closure(char c) {
+  return isdigit(c);
+}
+
+// The if statement for an identifier
+bool is_valid_ident_closure(char c) {
+  return (isalnum(c) && !ispunct(c)) || c == '_';
+}
+
+// Parse some text thing
+char *get_value(char *text, int *i, bool(*f)(char c)) {
 
   // Initialize the number string
-  char *number_string = malloc(sizeof(char));
+  char *str = malloc(sizeof(char));
   size_t num_chars = 0;
 
   // While there are characters and they are digits
   (*i)++;
   while (strlen(text) > *i
-    && isdigit(text[*i])) {
+    && f(text[*i])) {
 
     num_chars += 1;
-    number_string = realloc(number_string, sizeof(char) * num_chars);
-    number_string[num_chars - 1] = text[*i];
+    str = realloc(str, sizeof(char) * num_chars);
+    str[num_chars - 1] = text[*i];
     
     // Increment i
     (*i)++;
@@ -36,14 +46,34 @@ PartialLexerResult tokenize_number(char *text, int *i) {
   // Decrement i
   (*i)--;
 
-  // Allocate the token on the heap (deque requirement)
-  Token t;
-  t.type = NUMBER;
-  t.value = number_string;
+  return str;
+}
+
+// Tokenize a number
+PartialLexerResult tokenize_number(char *text, int *i) {
+
+  // Get the number string
+  char *number_string = get_value(text, i, is_valid_number_closure);
+
+  // Create the token
+  Token t = (Token){ .type = NUMBER, .value = number_string };
 
   // If it gets here, it's a valid number
   return (PartialLexerResult){.error = NULL, .token = t};
-} 
+}
+
+// Tokenize a labeled identifier
+PartialLexerResult tokenize_labeled_identifier(char *text, int *i, TokenType t) {
+
+  // Get the name of it
+  char *name = get_value(text, i, is_valid_ident_closure);
+
+  // Create the token
+  Token tt = (Token){ .type = t, .value = name };
+
+  // Return the partial lexer result
+  return (PartialLexerResult){ .error = NULL, .token = tt };
+}
 
 // Tokenize a string
 LexerResult tokenize(char *text) {
@@ -58,28 +88,40 @@ LexerResult tokenize(char *text) {
   // While there is a character
   while (strlen(text) > i) {
 
+    // Prepare the result
+    PartialLexerResult res;
+    bool hasRes = false;
+  
     // All possible cases
     switch (text[i]) {
 
       // If it is a number
       case '#': {
-
-        // Get the token result
-        PartialLexerResult res = tokenize_number(text, &i);
-
-        // If there is an error
-        if (res.error != NULL) {
-          return (LexerResult){tokens = NULL, .error = res.error};
-        }
-
-        // Add the token
-        token_count += 1;
-        tokens = realloc(tokens, sizeof(Token) * token_count);
-        tokens[token_count - 1] = res.token;
+        res = tokenize_number(text, &i);
+        hasRes = true;
+        break;
       }
-
+      case '$': {
+        printf("Hello, world!\n");
+        res = tokenize_labeled_identifier(text, &i, VAR_IDENT);
+        hasRes = true;
+        break;
+      }
+    
       // Default case
       default: {}
+    }
+    
+    // If there is an error
+    if (res.error != NULL) {
+      return (LexerResult){tokens = NULL, .error = res.error};
+    }
+
+    // Add the token
+    if (hasRes) {
+      token_count += 1;
+      tokens = realloc(tokens, sizeof(Token) * token_count);
+      tokens[token_count - 1] = res.token;
     }
 
     // Increase i

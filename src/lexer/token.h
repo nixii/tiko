@@ -6,8 +6,9 @@ typedef enum TokenType {
   KEYWORD,
 
   LABEL_IDENT,
-
   VAR_IDENT,
+  CONST_IDENT,
+  GLOBAL_IDENT,
 
   OPERATION,
 
