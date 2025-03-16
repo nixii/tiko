@@ -1,0 +1,9 @@
+
+.data:
+	@hello
+
+label %main:
+	$x set #0 + #10
+	$x set $x + #14
+	call sysout $x #1
+	call return #0
