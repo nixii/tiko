@@ -116,10 +116,23 @@ LexerResult tokenize(char *text) {
         res = tokenize_labeled_identifier(text, &i, GLOBAL_IDENT);
         break;
       }
+      case ':': {
+        res = (PartialLexerResult) {.token = Token_new(COLON, NULL), NULL};
+        break;
+      }
     
       // Default case
       default: {
-        hasRes = false;
+
+        // Handle identifiers for keywords
+        if (isalpha(text[i])) {
+          i--;
+          res = tokenize_labeled_identifier(text, &i, KEYWORD);
+          
+        // No keywords here
+        } else {
+          hasRes = false;
+        }
       }
     }
     
