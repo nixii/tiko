@@ -11,5 +11,8 @@ typedef struct LexerResult {
   size_t num_tokens;
 } LexerResult;
 
+// Define the buffer size to 1kB
+#define FREAD_BUFFER_SIZE 1024
+
 // Tokenize the input
-LexerResult tokenize(char *text);
+LexerResult tokenize(const char *file_name);

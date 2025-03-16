@@ -16,7 +16,9 @@ typedef enum TokenType {
   COLON,
 
   NUMBER,
-  BOOL 
+  BOOL,
+
+  ERRTOK = 99999
 } TokenType;
 
 // Create the struct for a token

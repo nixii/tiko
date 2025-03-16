@@ -23,37 +23,55 @@ bool is_valid_ident_closure(char c) {
   return (isalnum(c) && !ispunct(c)) || c == '_';
 }
 
+// Read more
+size_t read_more(char buffer[FREAD_BUFFER_SIZE],
+                 FILE* f) {
+  return fread(buffer, sizeof(char), FREAD_BUFFER_SIZE, f);
+}
+
 // Parse some text thing
-char *get_value(char *text, int *i, bool(*f)(char c)) {
+char *get_value(char buffer[FREAD_BUFFER_SIZE],
+                size_t *bytes_read,
+                size_t *bytes_processed,
+                FILE *f,
+                bool(*fn)(char c)) {
 
   // Initialize the number string
   char *str = malloc(sizeof(char));
   size_t num_chars = 0;
 
   // While there are characters and they are digits
-  (*i)++;
-  while (strlen(text) > *i
-    && f(text[*i])) {
+  (*bytes_processed)++;
+  while (*bytes_processed < *bytes_read && bytes_read > 0 && fn(buffer[*bytes_processed])) {
 
     num_chars += 1;
     str = realloc(str, sizeof(char) * num_chars);
-    str[num_chars - 1] = text[*i];
+    str[num_chars - 1] = buffer[*bytes_processed];
     
     // Increment i
-    (*i)++;
+    (*bytes_processed)++;
+
+    // Make sure you grab stuff
+    if (*bytes_processed >= *bytes_read) {
+      *bytes_read = read_more(buffer, f);
+    }
   }
 
   // Decrement i
-  (*i)--;
+  (*bytes_processed)--;
 
   return str;
 }
+//          res = tokenize_number(buffer, bytes_read, &bytes_processed, f);
 
 // Tokenize a number
-PartialLexerResult tokenize_number(char *text, int *i) {
+PartialLexerResult tokenize_number(char buffer[FREAD_BUFFER_SIZE],
+                                   size_t *bytes_read,
+                                   size_t *bytes_processed,
+                                   FILE *f) {
 
   // Get the number string
-  char *number_string = get_value(text, i, is_valid_number_closure);
+  char *number_string = get_value(buffer, bytes_read, bytes_processed, f, is_valid_number_closure);
 
   // Create the token
   Token t = (Token){ .type = NUMBER, .value = number_string };
@@ -63,10 +81,14 @@ PartialLexerResult tokenize_number(char *text, int *i) {
 }
 
 // Tokenize a labeled identifier
-PartialLexerResult tokenize_labeled_identifier(char *text, int *i, TokenType t) {
+PartialLexerResult tokenize_labeled_identifier(char buffer[FREAD_BUFFER_SIZE],
+                                               size_t *bytes_read,
+                                               size_t *bytes_processed,
+                                               FILE *f,
+                                               TokenType t) {
 
   // Get the name of it
-  char *name = get_value(text, i, is_valid_ident_closure);
+  char *name = get_value(buffer, bytes_read, bytes_processed, f, is_valid_ident_closure);
 
   // Create the token
   Token tt = (Token){ .type = t, .value = name };
@@ -76,7 +98,7 @@ PartialLexerResult tokenize_labeled_identifier(char *text, int *i, TokenType t) 
 }
 
 // Tokenize a string
-LexerResult tokenize(char *text) {
+LexerResult tokenize(const char *file_name) {
 
   // How many characters are there
   int i = 0;
@@ -85,75 +107,94 @@ LexerResult tokenize(char *text) {
   Token *tokens = malloc(0);
   int token_count = 0;
 
-  // While there is a character
-  while (strlen(text) > i) {
+  // Load the buffer
+  char buffer[FREAD_BUFFER_SIZE];
 
-    // Prepare the result
-    PartialLexerResult res;
-    bool hasRes = true;
+  // Load the file
+  FILE *f = fopen(file_name, "r");
+  if (f == NULL) {
+    fprintf(stderr, "Error opening file!");
+    return (LexerResult){NULL, NULL};
+  }
+
+  // Start the read loop
+  size_t bytes_read;
+  size_t bytes_processed;
+  while ((bytes_read = read_more(buffer, f)) > 0) {
+    bytes_processed = 0;
+
+    // While there is a character
+    while (bytes_processed < bytes_read) {
   
-    // All possible cases
-    switch (text[i]) {
-
-      // If it is a number
-      case '#': {
-        res = tokenize_number(text, &i);
-        break;
-      }
-      case '$': {
-        res = tokenize_labeled_identifier(text, &i, VAR_IDENT);
-        break;
-      }
-      case '%': {
-        res = tokenize_labeled_identifier(text, &i, LABEL_IDENT);
-        break;
-      }
-      case '@': {
-        res = tokenize_labeled_identifier(text, &i, CONST_IDENT);
-        break;
-      }
-      case '!': {
-        res = tokenize_labeled_identifier(text, &i, GLOBAL_IDENT);
-        break;
-      }
-      case ':': {
-        res = (PartialLexerResult) {.token = Token_new(COLON, NULL), NULL};
-        break;
-      }
-      case '.': {
-        res = tokenize_labeled_identifier(text, &i, SECT_IDENT);
-        break;  
-      }
+      // Prepare the result
+      PartialLexerResult res = (PartialLexerResult){Token_new(ERRTOK, NULL), NULL};
+      bool hasRes = true;
     
-      // Default case
-      default: {
+      // All possible cases
+      switch ((buffer[bytes_processed])) {
+  
+        // If it is a number
+        case '#': {
+          res = tokenize_number(buffer, &bytes_read, &bytes_processed, f);
+          break;
+        }
+        case '$': {
+          res = tokenize_labeled_identifier(buffer, &bytes_read, &bytes_processed, f,  VAR_IDENT);
+          break;
+        }
+        case '%': {
+          res = tokenize_labeled_identifier(buffer, &bytes_read, &bytes_processed, f,  LABEL_IDENT);
+          break;
+        }
+        case '@': {
+          res = tokenize_labeled_identifier(buffer, &bytes_read, &bytes_processed, f,  CONST_IDENT);
+          break;
+        }
+        case '!': {
+          res = tokenize_labeled_identifier(buffer, &bytes_read, &bytes_processed, f,  GLOBAL_IDENT);
+          break;
+        }
+        case ':': {
+          res = (PartialLexerResult) {.token = Token_new(COLON, NULL), NULL};
+          break;
+        }
+        case '.': {
+          res = tokenize_labeled_identifier(buffer, &bytes_read, &bytes_processed, f,  SECT_IDENT);
+          break;  
+        }
+      
+        // Default case
+        default: {
+  
+          // Handle identifiers for keywords
+          if (isalpha(buffer[bytes_processed])) {
+            bytes_processed--;
+            res = tokenize_labeled_identifier(buffer, &bytes_read, &bytes_processed, f,  KEYWORD);
 
-        // Handle identifiers for keywords
-        if (isalpha(text[i])) {
-          i--;
-          res = tokenize_labeled_identifier(text, &i, KEYWORD);
-          
-        // No keywords here
-        } else {
-          hasRes = false;
+            
+          // No keywords here
+          } else {
+            hasRes = false;
+          }
         }
       }
-    }
     
-    // If there is an error
-    if (res.error != NULL) {
-      return (LexerResult){tokens = NULL, .error = res.error};
-    }
+    
+      // If there is an error
+      if (res.error != NULL) {
+        return (LexerResult){tokens = NULL, .error = res.error};
+      }
 
-    // Add the token
-    if (hasRes) {
-      token_count += 1;
-      tokens = realloc(tokens, sizeof(Token) * token_count);
-      tokens[token_count - 1] = res.token;
-    }
+      // Add the token
+      if (hasRes) {
+        token_count += 1;
+        tokens = realloc(tokens, sizeof(Token) * token_count);
+        tokens[token_count - 1] = res.token;
+      }
 
-    // Increase i
-    i++;
+      // Increase i
+      bytes_processed++;
+    }
   }
 
   // Return the list of tokens
