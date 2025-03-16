@@ -138,30 +138,53 @@ LexerResult tokenize(const char *file_name) {
           res = tokenize_number(buffer, &bytes_read, &bytes_processed, f);
           break;
         }
+
+        // Variables
         case '$': {
           res = tokenize_labeled_identifier(buffer, &bytes_read, &bytes_processed, f,  VAR_IDENT);
           break;
         }
+
+        // Labels
         case '%': {
           res = tokenize_labeled_identifier(buffer, &bytes_read, &bytes_processed, f,  LABEL_IDENT);
           break;
         }
+
+        // Constants
         case '@': {
           res = tokenize_labeled_identifier(buffer, &bytes_read, &bytes_processed, f,  CONST_IDENT);
           break;
         }
+
+        // Globals (preset constants)
         case '!': {
           res = tokenize_labeled_identifier(buffer, &bytes_read, &bytes_processed, f,  GLOBAL_IDENT);
           break;
         }
+
+        // Colon for code blocks
         case ':': {
           res = (PartialLexerResult) {.token = Token_new(COLON, NULL), NULL};
           break;
         }
+
+        // Sections
         case '.': {
           res = tokenize_labeled_identifier(buffer, &bytes_read, &bytes_processed, f,  SECT_IDENT);
           break;  
         }
+
+        // Addition/subtraction/mul/div
+        case '+':
+          res = (PartialLexerResult) {.token = Token_new(OPERATION, "+"), NULL}; break;
+        case '-':
+          res = (PartialLexerResult) {.token = Token_new(OPERATION, "-"), NULL}; break;
+        case '*':
+          res = (PartialLexerResult) {.token = Token_new(OPERATION, "*"), NULL}; break;
+        case '/':
+          res = (PartialLexerResult) {.token = Token_new(OPERATION, "/"), NULL}; break;
+
       
         // Default case
         default: {

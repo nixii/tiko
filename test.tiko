@@ -1,6 +1,6 @@
 
 .data:
-	@hello
+	@hello set "Hello, world!\n"
 
 label %main:
 	$x set #0 + #10
