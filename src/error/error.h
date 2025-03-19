@@ -12,4 +12,4 @@ typedef struct Error {
 } Error;
 
 // Create a new error
-Error Error_new(ErrorType type, char *data);
+Error *Error_new(ErrorType type, char *data);
