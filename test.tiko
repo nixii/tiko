@@ -1,9 +1,9 @@
 
 .data:
-	@hello set "Hello, world!\n"
+	@hello "Hello, world!\n"
 
 label %main:
-	$x set #0 + #10
-	$x set $x + #14
+	set $x #0 + #10
+	set $x $x + #14
 	call sysout $x #1
 	call return #0
