@@ -18,6 +18,8 @@ typedef enum TokenType {
   NUMBER,
   BOOL,
 
+  NEWLINE,
+
   ERRTOK = 99999
 } TokenType;
 

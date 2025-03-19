@@ -177,13 +177,18 @@ LexerResult tokenize(const char *file_name) {
 
         // Addition/subtraction/mul/div
         case '+':
-          res = (PartialLexerResult) {.token = Token_new(OPERATION, "+"), NULL}; break;
+          res = (PartialLexerResult) { .token = Token_new(OPERATION, "+"), NULL }; break;
         case '-':
-          res = (PartialLexerResult) {.token = Token_new(OPERATION, "-"), NULL}; break;
+          res = (PartialLexerResult) { .token = Token_new(OPERATION, "-"), NULL }; break;
         case '*':
-          res = (PartialLexerResult) {.token = Token_new(OPERATION, "*"), NULL}; break;
+          res = (PartialLexerResult) { .token = Token_new(OPERATION, "*"), NULL }; break;
         case '/':
-          res = (PartialLexerResult) {.token = Token_new(OPERATION, "/"), NULL}; break;
+          res = (PartialLexerResult) { .token = Token_new(OPERATION, "/"), NULL }; break;
+
+        // Newline
+        case '\n':
+        case ';':
+          res = (PartialLexerResult){ .token = Token_new(NEWLINE, NULL), NULL }; break;
 
       
         // Default case
