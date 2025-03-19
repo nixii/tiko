@@ -1,6 +1,7 @@
 
 // Get the symbols
 #include <stdlib.h>
+#include <string.h>
 #include "parser.h"
 
 // Partial parser result
@@ -12,7 +13,6 @@ typedef struct PartialParserResult {
 // TODO
 // Parse a keyword
 PartialParserResult parseKeyword(LexerResult *tokens, int *i) {
-  return (PartialParserResult){};
 }
 
 // Parse!
