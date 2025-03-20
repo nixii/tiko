@@ -15,7 +15,7 @@ typedef struct AstNode {
   AstNodeType type;
 
   int argc;
-  AstNode **argv; // Pointer to an array of AST nodes
+  struct AstNode **argv; // Pointer to an array of AST nodes
 
   char *value;
 } AstNode;
